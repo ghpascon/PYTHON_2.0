@@ -1,0 +1,7 @@
+{
+    "host_address": "localhost",
+    "my_user": "root",
+    "my_password": "admin",
+    "my_database": "test",
+    "table_name": "test_table"
+}

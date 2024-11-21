@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atualização de Hora</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+
+    <div class="container1">
+        <form action="/submit" method="POST" target="hidden_iframe">
+            <input class="placeholder_style" type="text" name="name"><br>
+            <input class="placeholder_style" type="text" name="email"><br><br>
+            <input class="bt_style" type="submit" value="SAVE">
+        </form>
+        <iframe name="hidden_iframe" style="display:none;"></iframe>
+    </div>
+
+    <div class="container1">
+        <button onclick="fetch('/read')">READ</button>
+    </div>
+    
+    <div class="container1">
+        <button onclick="fetch('/clear')">CLEAR</button>
+    </div>
+
+</body>
+
+<script>
+
+</script>
+
+</html>

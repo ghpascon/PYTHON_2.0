@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atualização de Hora</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Hora Atual:</h1>
+        <div id="time-label">00:00:00</div>
+    </div>
+</body>
+
+<script>
+    function updateTime() {
+        fetch('/time')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('time-label').innerText = data.time;
+            });
+    }
+    setInterval(updateTime, 500);
+</script>
+
+</html>
