@@ -8,6 +8,7 @@ import glob
 def upload_program_to_esp():
     config = load_config("config/config.json")
     port = config["com_port"]
+    esp32s3 = config["esp32s3"]
 
     # Solicitar caminhos relativos
     bootloader_path = glob.glob(os.path.join("bin_files", '*.ino.bootloader.bin'))[0]
@@ -25,6 +26,7 @@ def upload_program_to_esp():
     flash_mode = "dio"
     flash_freq = "80m"
     flash_size = "4MB"
+    boot_location = "0x0" if esp32s3 else "0x1000"
 
     # Gerar o comando
     command = (
@@ -32,7 +34,7 @@ def upload_program_to_esp():
         f'--chip auto  --port "{port}" --baud {baud_rate} '
         f'--before default_reset --after hard_reset write_flash -z '
         f'--flash_mode {flash_mode} --flash_freq {flash_freq} --flash_size {flash_size} '
-        f'0x1000 "{bootloader_path}" 0x8000 "{partitions_path}" 0xe000 "{boot_app0_path}" 0x10000 "{app_path}" 0x290000 "{bin_data}"'
+        f'{boot_location} "{bootloader_path}" 0x8000 "{partitions_path}" 0xe000 "{boot_app0_path}" 0x10000 "{app_path}" 0x290000 "{bin_data}"'
     )
 
     # Exibir o comando para verificação

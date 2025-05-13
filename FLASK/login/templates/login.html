@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<h1>Login</h1>
+<form method="POST">
+    <label for="login">Login:</label>
+    <input type="text" id="login" name="login" required>
+    <label for="senha">Senha:</label>
+    <input type="password" id="senha" name="senha" required>
+    <button type="submit">Entrar</button>
+</form>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <script>
+                    alert("{{ messages[0] }}");  // Exibe o alerta com a mensagem
+                </script>
+            {% endif %}
+        {% endwith %}
+{% endblock %}

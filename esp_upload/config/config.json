@@ -1,3 +1,4 @@
 {
-    "com_port": "COM3"
+    "com_port": "COM3",
+    "esp32s3": true
 }

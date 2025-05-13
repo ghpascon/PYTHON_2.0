@@ -2,6 +2,6 @@
     "host_address": "localhost",
     "my_user": "root",
     "my_password": "admin",
-    "my_database": "test",
-    "table_name": "test_table"
+    "my_database": "dashboard_database",
+    "table_name": "users"
 }

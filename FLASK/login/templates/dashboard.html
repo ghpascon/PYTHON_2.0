@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<button id="toggle-btn" onclick="toggleSidebar()">☰</button>
+
+<div id="sidebar" style="z-index: 100;">
+    <label id="name_label"></label>
+    <button id="logoutButton" onclick="window.location.href='/logout'">Logout</button>
+    <label>Escolha um período:</label>
+    <br>
+    {% for period in ['todo o periodo', 'hoje', 'este mes', 'este ano', 'intervalo personalizado'] %}
+    <label for="{{ period }}">
+        <input type="radio" id="{{ period }}" name="period" value="{{ period }}" {% if loop.first %}checked{% endif %}>
+        {{ period.replace('-', ' ')|capitalize }}
+    </label><br>
+    {% endfor %}
+    
+    <!-- Campos para intervalo personalizado -->
+    <div id="custom-date-picker" style="display: none; margin-top: 10px;">
+        <label for="start-date">Data Inicial:</label>
+        <input type="date" id="start-date">
+        <br>
+        <label for="end-date">Data Final:</label>
+        <input type="date" id="end-date">
+    </div>
+</div>
+
+<!-- Conteúdo principal -->
+<div class="content" style="margin-top: 200px;">
+    <label id="periodo_selecionado" style="font-size: 20px;"></label>
+    
+    <div class="box_content" id="container">
+    </div>
+    
+    <table id="data_table">
+        <thead></thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+
+
+<!-- JavaScript -->
+<script>
+    window.onload = function () {
+        att_period_label()
+        att_name_label()
+    };
+    
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('visible'); // Adiciona ou remove a classe 'visible'
+    }
+    
+    function updateSquares() {
+        fetch('/get-squares-data')
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('container');
+            container.innerHTML = ''; // Limpar o conteúdo atual
+            
+            data.squares.forEach((square, index) => {
+                const button = document.createElement('button');
+                button.className = 'box';
+                button.style.backgroundColor = square.color;
+                button.style.color = 'black';  // Cor do texto para preto
+                button.style.border = 'none';  // Remover borda padrão de botão
+                button.style.cursor = 'pointer'; // Mostrar cursor de ponteiro para indicar que é clicável
+                
+                // Adicionando um estilo para o tamanho e formato do botão
+                button.style.display = 'flex';
+                button.style.flexDirection = 'column';
+                button.style.alignItems = 'center';
+                button.style.justifyContent = 'center';
+                button.style.padding = '10px';
+                button.style.fontFamily = 'Arial, sans-serif';
+                
+                const label = document.createElement('div');
+                label.className = 'label';
+                label.textContent = square.label;
+                label.style.fontSize = '30px';  // Tamanho da fonte para a label
+                
+                const number = document.createElement('div');
+                number.className = 'number';
+                number.textContent = square.number;
+                number.style.fontSize = '50px';  // Tamanho da fonte para o número
+                
+                button.appendChild(label);
+                button.appendChild(number);
+                container.appendChild(button);
+                
+                // Atribuindo o número sequencial ao botão e configurando o evento de clique
+                button.onclick = function() {
+                    const buttonNumber = index; // O número do botão será o índice
+                    fetch(`/bt_pressed?button=${buttonNumber}`)
+                    .then(response => response.text())
+                    .then(data => {
+                        console.log(data); // Exibe a resposta do servidor (opcional)
+                    })
+                    .catch(error => console.error('Erro ao enviar o número do botão:', error));
+                    att_table()
+                };
+            });
+        });
+        att_table();
+    }
+    
+    updateSquares(); // Chama imediatamente ao carregar a página
+    setInterval(updateSquares, 10000); // Chama a cada 5 segundos
+    
+    function att_table() {
+        fetch("/data_table_att")
+        .then((response) => response.json())
+        .then((data) => {
+            const tbody = document.getElementById("data_table").getElementsByTagName("tbody")[0];
+            const headerColor = data.header_color;  // Cor do cabeçalho
+            
+            // Limpa o conteúdo anterior
+            tbody.innerHTML = "";
+            
+            // Cria o cabeçalho
+            const thead = document.getElementById("data_table").getElementsByTagName("thead")[0];
+            const headerRow = document.createElement("tr");
+            data.columns.forEach((col) => {
+                const th = document.createElement("th");
+                th.innerHTML = col;
+                th.style.backgroundColor = headerColor;  // Aplica a cor do cabeçalho
+                headerRow.appendChild(th);
+            });
+            thead.innerHTML = "";  // Limpa o cabeçalho anterior
+            thead.appendChild(headerRow);
+            
+            // Cria as linhas de dados
+            data.rows.forEach((row) => {
+                let tr = document.createElement("tr");
+                row.forEach((cell) => {
+                    let td = document.createElement("td");
+                    td.innerHTML = cell;
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+        })
+        .catch((error) => console.error("Error fetching data:", error));
+    }
+    
+    // Função para obter a data atual no formato YYYY-MM-DD
+    function getToday() {
+        return new Date().toISOString().split('T')[0];
+    }
+    
+    // Configuração inicial do date picker
+    function setupDatePickers() {
+        const today = getToday();
+        const startDate = document.getElementById('start-date');
+        const endDate = document.getElementById('end-date');
+        
+        // Configura valores iniciais e máximos
+        startDate.value = today;
+        startDate.max = today;
+        endDate.value = today;
+        endDate.max = today;
+        
+        // Impede que a data inicial seja maior que a data final
+        startDate.addEventListener('change', () => {
+            if (startDate.value > endDate.value) {
+                endDate.value = startDate.value;
+            }
+            endDate.min = startDate.value;
+        });
+        
+        // Impede que a data final seja menor que a inicial
+        endDate.addEventListener('change', () => {
+            if (endDate.value < startDate.value) {
+                startDate.value = endDate.value;
+            }
+            startDate.max = endDate.value;
+        });
+    }
+    
+    // Mostrar ou ocultar o date picker personalizado
+    function toggleCustomDatePicker(show) {
+        const customDatePicker = document.getElementById('custom-date-picker');
+        if (show) {
+            customDatePicker.style.display = 'block';
+        } else {
+            customDatePicker.style.display = 'none';
+        }
+    }
+    
+    
+    // Enviar o período selecionado
+    function sendPeriodChange(periodo, startDate = null, endDate = null) {
+        const today = getToday();
+        startDate = startDate || today;
+        endDate = endDate || today;
+        
+        fetch('/update-period', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ periodo, start_date: startDate, end_date: endDate })
+        })
+        .then(response => response.json())
+        .then(data => console.log(data.message))
+        .catch(error => console.error('Error:', error));
+        att_period_label();
+        updateSquares();
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+        setupDatePickers();
+        
+        const radios = document.querySelectorAll('input[name="period"]');
+        radios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                const selectedPeriod = radio.value;
+                
+                if (selectedPeriod === 'intervalo personalizado') {
+                    toggleCustomDatePicker(true);
+                    const startDate = document.getElementById('start-date').value;
+                    const endDate = document.getElementById('end-date').value;
+                    
+                    // Envia o intervalo personalizado imediatamente
+                    sendPeriodChange(selectedPeriod, startDate, endDate);
+                } else {
+                    toggleCustomDatePicker(false);
+                    sendPeriodChange(selectedPeriod);
+                }
+            });
+        });
+        
+        // Enviar o período inicial ao carregar a página
+        const selectedPeriod = document.querySelector('input[name="period"]:checked').value;
+        if (selectedPeriod === 'intervalo personalizado') {
+            toggleCustomDatePicker(true);
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            sendPeriodChange(selectedPeriod, startDate, endDate);
+        } else {
+            toggleCustomDatePicker(false);
+            sendPeriodChange(selectedPeriod);
+        }
+        
+        // Adicionar eventos de alteração para campos de data no intervalo personalizado
+        const startDateInput = document.getElementById('start-date');
+        const endDateInput = document.getElementById('end-date');
+        
+        startDateInput.addEventListener('change', () => {
+            const selectedPeriod = document.querySelector('input[name="period"]:checked').value;
+            if (selectedPeriod === 'intervalo personalizado') {
+                const startDate = startDateInput.value;
+                const endDate = endDateInput.value;
+                sendPeriodChange(selectedPeriod, startDate, endDate);
+            }
+        });
+        
+        endDateInput.addEventListener('change', () => {
+            const selectedPeriod = document.querySelector('input[name="period"]:checked').value;
+            if (selectedPeriod === 'intervalo personalizado') {
+                const startDate = startDateInput.value;
+                const endDate = endDateInput.value;
+                sendPeriodChange(selectedPeriod, startDate, endDate);
+            }
+        });
+    });
+    
+    function att_period_label() {
+        fetch('/get_period_label')
+        .then(response => response.json())
+        .then(data => {
+            const label = document.getElementById('periodo_selecionado');
+            if (label) {
+                label.textContent = data.periodo_selecionado || 'Período não definido'; // Atualiza a label com o valor retornado
+            }
+        })
+        .catch(error => console.error('Erro ao atualizar o período:', error));
+    }
+    
+    function att_name_label() {
+        fetch('/get_name_label')
+        .then(response => response.json())
+        .then(data => {
+            const label = document.getElementById('name_label');
+            if (label) {
+                label.textContent = data.name || 'Erro' // Atualiza a label com o valor retornado
+            }
+        })
+        .catch(error => console.error('Erro ao atualizar o período:', error));
+    }
+    
+    
+</script>
+{% endblock %}

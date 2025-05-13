@@ -1,0 +1,242 @@
+/* Variáveis de cores */
+:root {
+  --cor_1: #110080;
+  --cor_2: #110050;
+  --cor_3: #00b7ff;
+  --cor_4: #ffffff; /* Cor de bordas e detalhes */
+}
+
+/* Estilo geral */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Arial", sans-serif;
+  background-color: var(--cor_1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+}
+
+/* Posiciona o logo no canto superior esquerdo */
+.logo-container {
+  position: fixed; /* Fica fixo em relação à tela */
+  top: 0; /* Fica no topo */
+  left: 0; /* Fica à direita */
+  z-index: 9999;
+}
+
+/* Define o estilo da imagem */
+.logo {
+  max-width: 150px; /* Ajusta o tamanho da imagem */
+  height: auto;
+}
+
+/* Centraliza o conteúdo da página */
+.page-container {
+  float: top;
+  clear: both;
+  padding-top: 20px; /* Espaço abaixo do logo */
+}
+
+/* Container do formulário */
+form {
+  background-color: var(--cor_2);
+  padding: 20px 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+}
+
+/* Título */
+h1 {
+  text-align: center;
+  color: var(--cor_4);
+  margin-bottom: 20px;
+}
+
+/* Campos de entrada */
+label {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+  color: var(--cor_4);
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid var(--cor_1);
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+/* Botão de enviar */
+button {
+  background-color: var(--cor_3);
+  color: var(--cor_4);
+  border: none;
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: darken(var(--cor_2), 10%);
+}
+
+.alert {
+  background-color: var(--cor_3); /* Vermelho */
+  color: var(--cor_4);
+  padding: 15px;
+  margin: 20px 0;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+  form {
+    padding: 15px 20px;
+  }
+}
+
+/* Sidebar */
+#sidebar {
+  position: fixed;
+  top: 80px;
+  left: -270px; /* Fora da tela por padrão */
+  height: 100vh;
+  width: 250px;
+  background-color: var(--cor_2);
+  transition: left 0.3s ease; /* Transição suave ao aparecer */
+  overflow-y: auto;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+  padding-top: 20px;
+  padding-left: 20px;
+  border-radius: 10px;
+}
+
+#sidebar a:hover {
+  background-color: var(--cor_3);
+}
+
+/* Classe para exibir o sidebar */
+#sidebar.visible {
+  left: 0; /* Move o sidebar para dentro da tela */
+}
+
+/* Botão de controle */
+#toggle-btn {
+  position: fixed;
+  top: 30px;
+  left: 160px;
+  background-color: var(--cor_3);
+  color: var(--cor_4);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 5px 10px; /* Espaçamento interno ajustável */
+  z-index: 1000; /* Fica acima do sidebar */
+  width: auto; /* Garante que o tamanho do botão seja automático */
+  white-space: nowrap; /* Impede quebra de linha no texto */
+  margin: 0;
+}
+
+#toggle-btn:hover {
+  background-color: var(--cor_2);
+}
+
+/* Conteúdo principal */
+.content {
+  display: flex;
+  flex-direction: column; /* Alinha os itens na horizontal */
+  align-items: center;
+}
+
+.box_content {
+  display: flex;
+  flex-direction: row; /* Alinha os itens na horizontal */
+  align-items: center; /* Opcional: Alinha os itens verticalmente ao centro */
+  gap: 20px;
+}
+
+.box {
+  width: 200px;
+  height: 200px;
+  /* background-color: green; */
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 10px;
+}
+
+/* Estilo para a tabela */
+table {
+  width: 100%; /* Largura da tabela */
+  margin: 20px auto; /* Espaçamento e centralização */
+  border-collapse: collapse;
+  max-height: 400px; /* Altura máxima para permitir rolagem */
+  overflow-y: auto; /* Permite rolagem vertical */
+  display: block; /* Faz a tabela ser um bloco e habilita a rolagem */
+}
+
+/* Estilo para a borda da tabela */
+table,
+th,
+td {
+  border: 1px solid #000000; /* Adiciona borda nas células e na tabela */
+}
+
+/* Estilo das células e do cabeçalho */
+th,
+td {
+  padding: 6px 12px; /* Preenchimento mais compacto */
+  text-align: center;
+  vertical-align: middle;
+  font-weight: normal;
+}
+
+th {
+  color: #000000;
+  font-family: Arial, sans-serif;
+  font-size: 20px; /* Tamanho da fonte do cabeçalho */
+  position: sticky; /* Tornar o cabeçalho fixo */
+  top: 0; /* Fixa a posição do cabeçalho no topo */
+  z-index: 1; /* Garante que o cabeçalho ficará acima das outras linhas */
+}
+
+/* Estilo para as linhas ímpares */
+tr:nth-child(odd) {
+  background-color: var(--cor_2);
+  color: var(--cor_4);
+  font-family: Arial, sans-serif;
+  font-size: 14px; /* Fontes menores para as linhas ímpares */
+}
+
+/* Estilo para as linhas pares */
+tr:nth-child(even) {
+  background-color: var(--cor_1);
+  color: var(--cor_4);
+  font-family: Arial, sans-serif;
+  font-size: 14px; /* Fontes menores para as linhas pares */
+}
+
+/* Estilo das células */
+td {
+  font-size: 14px; /* Tamanho da fonte das células */
+}
